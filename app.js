@@ -49,7 +49,7 @@ function defaults() {
     streak: { current: 0, best: 0, last: null },
     log: [],
     lastGoalBonus: null,
-    settings: { memMin: 3, testMin: 2, sound: true, lastSubject: "国語", goalSets: 4, testDate: "" },
+    settings: { memMin: 3, testMin: 2, sound: true, lastSubject: "国語", goalSets: 4, testDate: "2026-07-19" },
   };
 }
 let S = load();
