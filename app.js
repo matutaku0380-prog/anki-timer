@@ -2,42 +2,42 @@
 
 /* ---------- データ ---------- */
 const KEY = "ankiTimer.v1";
-const AVATARS = ["🐰", "🦊", "🐻", "🐱", "🐶", "🦁", "🐼", "🐸"];
+const AVATARS = ["🦊", "🐺", "🐯", "🦅", "🐧", "🐈‍⬛", "🐼", "🦉"];
 const SET_XP = 10;
 
 const ADVICE_MEM = [
-  "💡 こえに だして よんでみよう",
-  "💡 ゆびで なぞって かいてみよう",
-  "💡 いみを イメージしながら おぼえよう",
-  "💡 にがてな ものから おぼえよう",
-  "💡 めを つぶって いえるか ためしてみよう",
+  "💡 声に出して読むと記憶に残りやすい",
+  "💡 書いて覚えるなら指書きでもOK",
+  "💡 意味をイメージしながら覚えよう",
+  "💡 苦手なものから優先的に",
+  "💡 目を閉じて言えるかセルフチェック",
 ];
 const ADVICE_TEST = [
-  "💡 できなかった もんだいに 印をつけよう",
-  "💡 まちがえた じは 3かい かいてみよう",
-  "💡 印のついた もんだいは つぎも チェック!",
-  "💡 じしんが ないところは みなおそう",
+  "💡 できなかった問題に印をつけよう",
+  "💡 間違えた字・単語は3回書いて修正",
+  "💡 印のついた問題は次のセットでも要チェック",
+  "💡 自信がなかった所も見直しておこう",
 ];
 const PRAISE = [
-  "よくがんばったね!",
-  "すごい! つづけてえらい!",
-  "きょうも がんばったね!",
-  "その ちょうしだよ!",
-  "こつこつが かちだよ!",
+  "お疲れさま!",
+  "ナイス! 継続は力なり",
+  "いいペース!",
+  "その調子!",
+  "コツコツが最強",
 ];
 
 const BADGES = [
-  { id: "first",    emoji: "🌱", name: "はじめのいっぽ", desc: "はじめて 1セット やった",   test: (s) => s.log.length >= 1 },
-  { id: "sets10",   emoji: "🎈", name: "10セット",       desc: "ぜんぶで 10セット やった",  test: (s) => s.log.length >= 10 },
-  { id: "sets50",   emoji: "🏔️", name: "50セット",       desc: "プリント1しゅうぶん!",     test: (s) => s.log.length >= 50 },
-  { id: "sets100",  emoji: "👑", name: "100セット",      desc: "ぜんぶで 100セット やった", test: (s) => s.log.length >= 100 },
-  { id: "streak3",  emoji: "🔥", name: "3日れんぞく",    desc: "3日 つづけて がくしゅう",   test: (s) => s.streak.best >= 3 },
-  { id: "streak7",  emoji: "🚀", name: "1しゅうかん",    desc: "7日 つづけて がくしゅう",   test: (s) => s.streak.best >= 7 },
-  { id: "streak30", emoji: "🌈", name: "1かげつ",        desc: "30日 つづけて がくしゅう",  test: (s) => s.streak.best >= 30 },
-  { id: "perfect",  emoji: "💮", name: "パーフェクト",   desc: "5もん ぜんぶ せいかい",     test: (s) => s.log.some((e) => e.correct === 5) },
-  { id: "focus5",   emoji: "🧠", name: "しゅうちゅう",   desc: "1日に 5セット やった",      test: (s) => maxSetsPerDay(s) >= 5 },
-  { id: "both",     emoji: "🌸", name: "りょうほう",     desc: "1日に 国語と英語 りょうほう", test: (s) => bothSubjectsInADay(s) },
-  { id: "goalday",  emoji: "🎯", name: "もくひょうたっせい", desc: "1日の もくひょうを クリア",  test: (s) => !!s.lastGoalBonus },
+  { id: "first",    emoji: "🌱", name: "はじめの一歩", desc: "初めて1セット完了",        test: (s) => s.log.length >= 1 },
+  { id: "sets10",   emoji: "🎈", name: "10セット",     desc: "累計10セット達成",         test: (s) => s.log.length >= 10 },
+  { id: "sets50",   emoji: "🏔️", name: "50セット",     desc: "プリント1周分!",          test: (s) => s.log.length >= 50 },
+  { id: "sets100",  emoji: "👑", name: "100セット",    desc: "累計100セット達成",        test: (s) => s.log.length >= 100 },
+  { id: "streak3",  emoji: "🔥", name: "3日連続",      desc: "3日連続で学習",            test: (s) => s.streak.best >= 3 },
+  { id: "streak7",  emoji: "🚀", name: "1週間",        desc: "7日連続で学習",            test: (s) => s.streak.best >= 7 },
+  { id: "streak30", emoji: "🌈", name: "1ヶ月",        desc: "30日連続で学習",           test: (s) => s.streak.best >= 30 },
+  { id: "perfect",  emoji: "💮", name: "パーフェクト", desc: "5問全問正解",              test: (s) => s.log.some((e) => e.correct === 5) },
+  { id: "focus5",   emoji: "🧠", name: "集中モード",   desc: "1日に5セット",             test: (s) => maxSetsPerDay(s) >= 5 },
+  { id: "both",     emoji: "⚔️", name: "二刀流",       desc: "1日で国語と英語の両方",    test: (s) => bothSubjectsInADay(s) },
+  { id: "goalday",  emoji: "🎯", name: "目標達成",     desc: "1日の目標をクリア",        test: (s) => !!s.lastGoalBonus },
 ];
 
 function defaults() {
@@ -116,8 +116,8 @@ function bothSubjectsInADay(s) {
 function effectiveStreak() {
   if (!S.streak.last) return { n: 0, note: "" };
   const gap = daysBetween(S.streak.last, today());
-  if (gap <= 1) return { n: S.streak.current, note: gap === 1 ? "きょうも やって つなげよう!" : "" };
-  if (gap === 2 && S.freeze.count > 0) return { n: S.streak.current, note: "きょう やれば 🎫おやすみけんで つづくよ!" };
+  if (gap <= 1) return { n: S.streak.current, note: gap === 1 ? "今日もやって記録をつなげよう" : "" };
+  if (gap === 2 && S.freeze.count > 0) return { n: S.streak.current, note: "今日やれば🎫おやすみ券で連続記録が続く" };
   return { n: 0, note: "" };
 }
 
@@ -229,8 +229,8 @@ function startSession() {
 }
 function renderPhase() {
   const mem = session.phase === "mem";
-  $("timer-phase").textContent = mem ? "📖 おぼえよう!" : "✏️ テスト&まるつけ!";
-  $("timer-info").textContent = "きょう " + session.setNo + "セットめ・" + session.subject;
+  $("timer-phase").textContent = mem ? "📖 暗記タイム" : "✏️ テスト&丸つけ";
+  $("timer-info").textContent = "今日 " + session.setNo + "セット目・" + session.subject;
   const list = mem ? ADVICE_MEM : ADVICE_TEST;
   $("timer-advice").textContent = list[(S.log.length + session.setNo) % list.length];
   document.body.classList.toggle("phase-test", !mem);
@@ -294,8 +294,8 @@ function renderResult() {
     badgeBox.hidden = true;
   }
   $("result-note").textContent = [
-    r.goalBonus ? "🎯 きょうの もくひょう たっせい! +20 XP ボーナス!" : null,
-    r.freezeUsed ? "🎫 おやすみけんを つかって れんぞくを まもったよ!" : null,
+    r.goalBonus ? "🎯 今日の目標達成! +20 XPボーナス!" : null,
+    r.freezeUsed ? "🎫 おやすみ券で連続記録をキープ!" : null,
   ].filter(Boolean).join(" ");
 }
 
@@ -306,15 +306,15 @@ function buildReport(includeLast) {
   const mins = logs.length * (S.settings.memMin + S.settings.testMin);
   const subjects = [...new Set(logs.map((e) => e.subject))].join("・") || "-";
   const correctSum = logs.reduce((a, e) => a + e.correct, 0);
-  let text = "📚 あんきタイマー れんらく\n";
+  let text = "📚 暗記タイマー 学習報告\n";
   text += name + "\n";
-  text += "きょうのがくしゅう: " + logs.length + "セット(" + mins + "分)\n";
-  text += "きょうか: " + subjects + "\n";
-  text += "せいかい: " + correctSum + "/" + logs.length * 5 + "もん\n";
+  text += "今日の学習: " + logs.length + "セット(" + mins + "分)\n";
+  text += "教科: " + subjects + "\n";
+  text += "正解: " + correctSum + "/" + logs.length * 5 + "問\n";
   const per = perSubjectToday();
-  text += "🎯 もくひょう: 国語 " + per["国語"] + "/" + S.settings.goalSets + "・英語 " + per["英語"] + "/" + S.settings.goalSets + "\n";
-  if (includeLast && lastResult) text += "いまのセット: " + lastResult.correct + "/5もん せいかい\n";
-  if (S.streak.current > 1) text += "🔥 " + S.streak.current + "日れんぞく がくしゅうちゅう!\n";
+  text += "🎯 目標: 国語 " + per["国語"] + "/" + S.settings.goalSets + "・英語 " + per["英語"] + "/" + S.settings.goalSets + "\n";
+  if (includeLast && lastResult) text += "今回のセット: " + lastResult.correct + "/5問正解\n";
+  if (S.streak.current > 1) text += "🔥 " + S.streak.current + "日連続学習中!\n";
   const dt = daysToTest();
   if (dt !== null) text += "📝 テストまで あと" + dt + "日\n";
   return text;
@@ -326,9 +326,9 @@ async function shareReport(includeLast) {
   }
   try {
     await navigator.clipboard.writeText(text);
-    toast("コピーしたよ! LINEやメールに はりつけてね");
+    toast("コピーしました。LINEやメールに貼り付けて送ってください");
   } catch (e) {
-    prompt("このぶんしょうを コピーしてね", text);
+    prompt("この文章をコピーしてください", text);
   }
 }
 
@@ -353,16 +353,15 @@ function renderHome() {
   const es = effectiveStreak();
   $("home-streak").textContent = es.n;
   $("home-streak-flame").textContent = es.n > 0 ? "🔥" : "🕯️";
-  $("home-streak-note").textContent = es.note || (es.n === 0 ? "きょうから スタートしよう!" : "");
+  $("home-streak-note").textContent = es.note || (es.n === 0 ? "今日からスタート!" : "");
   $("home-freeze-count").textContent = S.freeze.week === isoWeek(new Date()) ? S.freeze.count : 1;
   const dt = daysToTest();
   $("home-countdown").hidden = dt === null;
   if (dt !== null) {
-    $("home-countdown-days").textContent = dt;
-    $("home-countdown").textContent = dt === 0 ? "📝 きょうが テスト! がんばれ!!" : "📝 テストまで あと" + dt + "日!";
+    $("home-countdown").textContent = dt === 0 ? "📝 テスト当日! 実力を出しきろう" : "📝 テストまで あと" + dt + "日";
   }
   const goal = S.settings.goalSets;
-  $("home-goal-label").textContent = "きょうの もくひょう(きょうかごとに " + goal + "セット)";
+  $("home-goal-label").textContent = "今日の目標(各教科 " + goal + "セット)";
   const per = perSubjectToday();
   const rows = $("home-goal-rows");
   rows.innerHTML = "";
@@ -374,12 +373,12 @@ function renderHome() {
     for (let i = 0; i < Math.max(goal, per[sub]); i++) {
       dotsHtml += '<span class="dot' + (i < per[sub] ? " done" : "") + '"></span>';
     }
-    row.innerHTML = '<span class="goal-name">' + sub + '</span><span class="dots">' + dotsHtml + "</span><span class=\"goal-check\">" + (cleared ? "クリア!🎉" : per[sub] + "/" + goal) + "</span>";
+    row.innerHTML = '<span class="goal-name">' + sub + '</span><span class="dots">' + dotsHtml + "</span><span class=\"goal-check\">" + (cleared ? "クリア🎉" : per[sub] + "/" + goal) + "</span>";
     rows.appendChild(row);
   });
   const n = todayLog().length;
   const allClear = SUBJECTS.every((sub) => per[sub] >= goal);
-  $("home-today").textContent = allClear ? "🎯 きょうの もくひょう ぜんぶクリア!" : n === 0 ? "まだ 0セット" : "ぜんぶで " + n + "セット できた!";
+  $("home-today").textContent = allClear ? "🎯 今日の目標を全クリア!" : n === 0 ? "今日はまだ0セット" : "今日の合計 " + n + "セット";
   document.querySelectorAll(".subject-btn").forEach((b) => b.classList.toggle("selected", b.dataset.subject === subject));
 }
 function renderHistory() {
@@ -392,7 +391,7 @@ function renderHistory() {
   list.innerHTML = "";
   const dates = Object.keys(byDate).sort().reverse().slice(0, 30);
   if (dates.length === 0) {
-    list.innerHTML = '<p class="hist-empty">まだ きろくが ないよ。<br>さいしょの 1セットを やってみよう!</p>';
+    list.innerHTML = '<p class="hist-empty">まだ記録がありません。<br>最初の1セットからスタート!</p>';
     return;
   }
   dates.forEach((d) => {
@@ -403,7 +402,7 @@ function renderHistory() {
     div.className = "hist-day";
     div.innerHTML =
       '<div><div class="hist-date">' + prettyDate(d) + '</div><div class="hist-detail">' +
-      subjects + " / せいかい " + correct + "/" + logs.length * 5 + "</div></div>" +
+      subjects + " / 正解 " + correct + "/" + logs.length * 5 + "</div></div>" +
       '<div class="hist-count">' + logs.length + "セット</div>";
     list.appendChild(div);
   });
@@ -442,7 +441,7 @@ function bind() {
   renderAvatarPicker("setup-avatars", setupAvatar, (a) => { setupAvatar = a; });
   $("setup-done").onclick = () => {
     const name = $("setup-name").value.trim();
-    if (!name) { toast("なまえを いれてね"); return; }
+    if (!name) { toast("名前を入力してください"); return; }
     S.profile = { name, avatar: setupAvatar };
     save();
     renderHome();
@@ -458,12 +457,12 @@ function bind() {
     };
   });
   $("btn-start").onclick = startSession;
-  $("btn-quit").onclick = () => { if (confirm("とちゅうで やめる?")) quitSession(); };
+  $("btn-quit").onclick = () => { if (confirm("このセットを中断する?")) quitSession(); };
   $("btn-settings").onclick = () => { openSettings(); };
   $("btn-history").onclick = () => { renderHistory(); showScreen("history"); };
   $("btn-badges").onclick = () => { renderBadges(); showScreen("badges"); };
   $("btn-share-today").onclick = () => {
-    if (todayLog().length === 0) { toast("きょうは まだ がくしゅうしてないよ"); return; }
+    if (todayLog().length === 0) { toast("今日はまだ学習記録がありません"); return; }
     shareReport(false);
   };
 
@@ -471,7 +470,7 @@ function bind() {
   for (let i = 0; i <= 5; i++) {
     const b = document.createElement("button");
     b.className = "mark-btn";
-    b.innerHTML = i + "<small>もん</small>";
+    b.innerHTML = i + "<small>問</small>";
     b.onclick = () => handleMark(i);
     grid.appendChild(b);
   }
@@ -496,10 +495,10 @@ function bind() {
     save();
     renderHome();
     showScreen("home");
-    toast("ほぞんしたよ!");
+    toast("保存しました");
   };
   $("set-reset").onclick = () => {
-    if (confirm("きろくも バッジも ぜんぶ きえるよ。ほんとうに けす?") && confirm("ほんとうに ほんとうに いい?")) {
+    if (confirm("記録もバッジも全て消えます。リセットする?") && confirm("最終確認: 本当に消していい?")) {
       localStorage.removeItem(KEY);
       S = defaults();
       showScreen("setup");

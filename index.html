@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<title>あんきタイマー</title>
-<meta name="theme-color" content="#FF7A59">
+<title>暗記タイマー</title>
+<meta name="theme-color" content="#E85D3D">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="あんきタイマー">
+<meta name="apple-mobile-web-app-title" content="暗記タイマー">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -16,28 +16,28 @@
 </head>
 <body>
 
-<!-- はじめて画面 -->
+<!-- 初回設定画面 -->
 <section id="screen-setup" class="screen">
   <div class="setup-hero">
-    <div class="app-logo">⏰</div>
-    <h1>あんきタイマー</h1>
-    <p class="sub">3ぷん おぼえて 2ふんで テスト!</p>
+    <div class="app-logo">⏱</div>
+    <h1>暗記タイマー</h1>
+    <p class="sub">3分暗記 → 2分テスト&丸つけ</p>
   </div>
   <div class="card">
-    <label class="field-label">なまえを おしえてね</label>
-    <input type="text" id="setup-name" maxlength="10" placeholder="なまえ">
-    <label class="field-label">すきな どうぶつを えらんでね</label>
+    <label class="field-label">名前</label>
+    <input type="text" id="setup-name" maxlength="10" placeholder="名前を入力">
+    <label class="field-label">アイコン</label>
     <div class="avatar-row" id="setup-avatars"></div>
-    <button class="btn-primary" id="setup-done">はじめる!</button>
+    <button class="btn-primary" id="setup-done">はじめる</button>
   </div>
 </section>
 
 <!-- ホーム画面 -->
 <section id="screen-home" class="screen">
   <header class="home-head">
-    <button class="who" id="btn-settings" aria-label="せってい">
-      <span class="avatar" id="home-avatar">🐰</span>
-      <span id="home-name">なまえ</span>
+    <button class="who" id="btn-settings" aria-label="設定">
+      <span class="avatar" id="home-avatar">🦊</span>
+      <span id="home-name">名前</span>
     </button>
     <div class="head-stats">
       <span class="pill pill-xp" id="home-xp">0 XP</span>
@@ -47,107 +47,107 @@
   <div class="card streak-card">
     <div class="streak-flame" id="home-streak-flame">🔥</div>
     <div>
-      <div class="streak-num"><span id="home-streak">0</span>日 れんぞく</div>
+      <div class="streak-num"><span id="home-streak">0</span>日連続</div>
       <div class="streak-note" id="home-streak-note"></div>
     </div>
-    <div class="freeze" id="home-freeze" title="おやすみけん">🎫<span id="home-freeze-count">1</span></div>
+    <div class="freeze" id="home-freeze" title="おやすみ券">🎫<span id="home-freeze-count">1</span></div>
   </div>
 
   <div class="card">
-    <div class="countdown" id="home-countdown" hidden>📝 テストまで あと<span id="home-countdown-days">14</span>日!</div>
-    <div class="today-label" id="home-goal-label">きょうの もくひょう(きょうかごとに 4セット)</div>
+    <div class="countdown" id="home-countdown" hidden></div>
+    <div class="today-label" id="home-goal-label">今日の目標(各教科4セット)</div>
     <div class="goal-rows" id="home-goal-rows"></div>
-    <div class="today-sets" id="home-today">まだ 0セット</div>
+    <div class="today-sets" id="home-today">まだ0セット</div>
 
     <div class="subject-row">
-      <button class="subject-btn" data-subject="国語">国語<small>かんじ</small></button>
-      <button class="subject-btn" data-subject="英語">英語<small>たんご</small></button>
+      <button class="subject-btn" data-subject="国語">国語<small>漢字</small></button>
+      <button class="subject-btn" data-subject="英語">英語<small>単語</small></button>
     </div>
 
     <button class="btn-primary btn-start" id="btn-start">▶ スタート</button>
-    <p class="start-hint">プリントを よういしてね</p>
+    <p class="start-hint">プリントを手元に準備</p>
   </div>
 
   <nav class="home-nav">
-    <button id="btn-history">📋 きろく</button>
+    <button id="btn-history">📋 記録</button>
     <button id="btn-badges">🏅 バッジ</button>
-    <button id="btn-share-today">📮 れんらく</button>
+    <button id="btn-share-today">📮 報告</button>
   </nav>
 </section>
 
 <!-- タイマー画面 -->
 <section id="screen-timer" class="screen">
-  <div class="phase-banner" id="timer-phase">おぼえよう!</div>
+  <div class="phase-banner" id="timer-phase">暗記タイム</div>
   <div class="timer-clock" id="timer-clock">3:00</div>
   <div class="bar"><div class="bar-fill" id="timer-bar"></div></div>
-  <div class="timer-info" id="timer-info">きょう 1セットめ・国語</div>
-  <div class="advice" id="timer-advice">💡 こえに だして よんでみよう</div>
-  <button class="btn-quiet" id="btn-quit">× やめる</button>
+  <div class="timer-info" id="timer-info">今日 1セット目・国語</div>
+  <div class="advice" id="timer-advice">💡 声に出して読むと覚えやすい</div>
+  <button class="btn-quiet" id="btn-quit">× 中断</button>
 </section>
 
-<!-- まるつけ入力画面 -->
+<!-- 丸つけ入力画面 -->
 <section id="screen-marking" class="screen">
-  <h2 class="center">おつかれさま!</h2>
-  <p class="center sub">まるつけは できたかな?<br>5もん中 なんもん せいかいだった?</p>
+  <h2 class="center">お疲れさま!</h2>
+  <p class="center sub">丸つけは終わった?<br>5問中、何問正解だった?</p>
   <div class="mark-grid" id="mark-grid"></div>
-  <p class="advice center">💡 できなかった もんだいには<br>プリントに 印をつけておこう</p>
+  <p class="advice center">💡 できなかった問題には<br>プリントに印をつけておこう</p>
 </section>
 
-<!-- けっか画面 -->
+<!-- 結果画面 -->
 <section id="screen-result" class="screen">
   <div class="result-hero">
     <div class="result-emoji" id="result-emoji">🎉</div>
-    <h2 id="result-praise">よくがんばったね!</h2>
+    <h2 id="result-praise">お疲れさま!</h2>
   </div>
   <div class="card result-stats">
-    <div class="rstat"><span class="rstat-label">せいかい</span><span class="rstat-val" id="result-correct">4/5</span></div>
-    <div class="rstat"><span class="rstat-label">ゲット</span><span class="rstat-val xp">+10 XP</span></div>
-    <div class="rstat"><span class="rstat-label">れんぞく</span><span class="rstat-val" id="result-streak">🔥1日</span></div>
+    <div class="rstat"><span class="rstat-label">正解</span><span class="rstat-val" id="result-correct">4/5</span></div>
+    <div class="rstat"><span class="rstat-label">獲得</span><span class="rstat-val xp">+10 XP</span></div>
+    <div class="rstat"><span class="rstat-label">連続</span><span class="rstat-val" id="result-streak">🔥1日</span></div>
   </div>
   <div class="badge-unlock" id="result-badge" hidden></div>
   <div class="result-note" id="result-note"></div>
-  <button class="btn-primary" id="btn-share">📮 おうちの人に れんらくする</button>
-  <button class="btn-secondary" id="btn-again">もう1セット やる!</button>
+  <button class="btn-primary" id="btn-share">📮 報告を送る</button>
+  <button class="btn-secondary" id="btn-again">もう1セット</button>
   <button class="btn-quiet" id="btn-home">ホームへ</button>
 </section>
 
-<!-- きろく画面 -->
+<!-- 記録画面 -->
 <section id="screen-history" class="screen">
-  <header class="page-head"><button class="back" data-back>‹ もどる</button><h2>きろく</h2></header>
+  <header class="page-head"><button class="back" data-back>‹ 戻る</button><h2>記録</h2></header>
   <div class="summary-row">
     <div class="sum-card"><div class="sum-num" id="hist-total">0</div><div class="sum-label">合計セット</div></div>
     <div class="sum-card"><div class="sum-num" id="hist-min">0</div><div class="sum-label">合計(分)</div></div>
-    <div class="sum-card"><div class="sum-num" id="hist-best">0</div><div class="sum-label">さいこう れんぞく</div></div>
+    <div class="sum-card"><div class="sum-num" id="hist-best">0</div><div class="sum-label">最高連続</div></div>
   </div>
   <div id="hist-list"></div>
 </section>
 
 <!-- バッジ画面 -->
 <section id="screen-badges" class="screen">
-  <header class="page-head"><button class="back" data-back>‹ もどる</button><h2>バッジ</h2></header>
+  <header class="page-head"><button class="back" data-back>‹ 戻る</button><h2>バッジ</h2></header>
   <div class="badge-grid" id="badge-grid"></div>
 </section>
 
-<!-- せってい画面 -->
+<!-- 設定画面 -->
 <section id="screen-settings" class="screen">
-  <header class="page-head"><button class="back" data-back>‹ もどる</button><h2>せってい</h2></header>
+  <header class="page-head"><button class="back" data-back>‹ 戻る</button><h2>設定</h2></header>
   <div class="card">
-    <label class="field-label">なまえ</label>
+    <label class="field-label">名前</label>
     <input type="text" id="set-name" maxlength="10">
-    <label class="field-label">どうぶつ</label>
+    <label class="field-label">アイコン</label>
     <div class="avatar-row" id="set-avatars"></div>
-    <label class="field-label">おぼえる じかん</label>
+    <label class="field-label">暗記時間</label>
     <select id="set-mem"><option value="1">1分</option><option value="2">2分</option><option value="3" selected>3分</option><option value="4">4分</option><option value="5">5分</option></select>
-    <label class="field-label">テストの じかん</label>
+    <label class="field-label">テスト時間</label>
     <select id="set-test"><option value="1">1分</option><option value="2" selected>2分</option><option value="3">3分</option></select>
-    <label class="field-label">1日の もくひょう(きょうかごとのセット数)</label>
+    <label class="field-label">1日の目標(教科ごとのセット数)</label>
     <select id="set-goal"><option value="1">1セット</option><option value="2">2セット</option><option value="3">3セット</option><option value="4" selected>4セット</option><option value="5">5セット</option><option value="6">6セット</option><option value="8">8セット</option></select>
-    <label class="field-label">テストの日(ホームに カウントダウンを だすよ)</label>
+    <label class="field-label">テスト日(ホームにカウントダウン表示)</label>
     <input type="date" id="set-testdate">
-    <label class="check-row"><input type="checkbox" id="set-sound" checked> アラームの音を ならす</label>
-    <button class="btn-primary" id="set-save">ほぞんする</button>
+    <label class="check-row"><input type="checkbox" id="set-sound" checked> アラーム音を鳴らす</label>
+    <button class="btn-primary" id="set-save">保存する</button>
   </div>
-  <button class="btn-danger" id="set-reset">データを ぜんぶ けす</button>
+  <button class="btn-danger" id="set-reset">データをリセット</button>
 </section>
 
 <script src="app.js"></script>

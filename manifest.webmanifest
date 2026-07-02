@@ -1,14 +1,14 @@
 {
-  "name": "あんきタイマー",
-  "short_name": "あんきタイマー",
-  "description": "3分おぼえて2分でテスト! 子供の暗記学習タイマー",
+  "name": "暗記タイマー",
+  "short_name": "暗記タイマー",
+  "description": "3分暗記+2分テストの学習タイマー",
   "lang": "ja",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#FFF7EE",
-  "theme_color": "#FF7A59",
+  "background_color": "#F4F3F0",
+  "theme_color": "#E85D3D",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
     { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
