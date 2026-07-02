@@ -228,7 +228,7 @@ function startSession() {
   showScreen("timer");
   requestWake();
   playStart();
-  if (S.settings.sound) toast("🔊 スタート音が聞こえなければ音量を上げて!");
+  if (S.settings.sound) toast("🔊 スタート音が聞こえない時は、マナーモード解除と音量アップ!");
   clearInterval(timerId);
   timerId = setInterval(tick, 200);
   tick();
