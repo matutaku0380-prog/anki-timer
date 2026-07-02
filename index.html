@@ -54,9 +54,10 @@
   </div>
 
   <div class="card">
-    <div class="today-label">きょうの がくしゅう</div>
+    <div class="countdown" id="home-countdown" hidden>📝 テストまで あと<span id="home-countdown-days">14</span>日!</div>
+    <div class="today-label" id="home-goal-label">きょうの もくひょう(きょうかごとに 4セット)</div>
+    <div class="goal-rows" id="home-goal-rows"></div>
     <div class="today-sets" id="home-today">まだ 0セット</div>
-    <div class="dots" id="home-dots"></div>
 
     <div class="subject-row">
       <button class="subject-btn" data-subject="国語">国語<small>かんじ</small></button>
@@ -139,6 +140,10 @@
     <select id="set-mem"><option value="1">1分</option><option value="2">2分</option><option value="3" selected>3分</option><option value="4">4分</option><option value="5">5分</option></select>
     <label class="field-label">テストの じかん</label>
     <select id="set-test"><option value="1">1分</option><option value="2" selected>2分</option><option value="3">3分</option></select>
+    <label class="field-label">1日の もくひょう(きょうかごとのセット数)</label>
+    <select id="set-goal"><option value="1">1セット</option><option value="2">2セット</option><option value="3">3セット</option><option value="4" selected>4セット</option><option value="5">5セット</option><option value="6">6セット</option><option value="8">8セット</option></select>
+    <label class="field-label">テストの日(ホームに カウントダウンを だすよ)</label>
+    <input type="date" id="set-testdate">
     <label class="check-row"><input type="checkbox" id="set-sound" checked> アラームの音を ならす</label>
     <button class="btn-primary" id="set-save">ほぞんする</button>
   </div>

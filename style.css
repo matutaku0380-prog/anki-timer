@@ -74,11 +74,21 @@ input[type="text"]:focus, select:focus { outline: none; border-color: #FF9C7E; }
 .streak-note { font-size: 12px; color: #8A7466; }
 .freeze { margin-left: auto; font-size: 18px; background: #EAF4FF; color: #2A6FB0; padding: 6px 10px; border-radius: 12px; font-weight: bold; }
 
+.countdown {
+  display: inline-block; margin-bottom: 10px; padding: 6px 14px;
+  background: #FFE3E3; color: #B03030; border-radius: 999px;
+  font-size: 15px; font-weight: bold;
+}
 .today-label { font-size: 14px; color: #8A7466; }
-.today-sets { font-size: 22px; font-weight: bold; margin: 2px 0 6px; }
-.dots { display: flex; gap: 6px; margin-bottom: 14px; min-height: 14px; }
+.today-sets { font-size: 17px; font-weight: bold; margin: 8px 0 12px; }
+.dots { display: flex; gap: 6px; min-height: 14px; align-items: center; }
 .dot { width: 14px; height: 14px; border-radius: 50%; background: #F0DBC8; }
 .dot.done { background: #FFB01F; }
+.goal-rows { margin-top: 8px; }
+.goal-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+.goal-name { font-size: 16px; font-weight: bold; width: 44px; }
+.goal-check { margin-left: auto; font-size: 14px; color: #8A7466; font-weight: bold; }
+.goal-row.done .goal-name, .goal-row.done .goal-check { color: #1D9E75; }
 
 .subject-row { display: flex; gap: 10px; }
 .subject-btn {

@@ -37,6 +37,7 @@ const BADGES = [
   { id: "perfect",  emoji: "💮", name: "パーフェクト",   desc: "5もん ぜんぶ せいかい",     test: (s) => s.log.some((e) => e.correct === 5) },
   { id: "focus5",   emoji: "🧠", name: "しゅうちゅう",   desc: "1日に 5セット やった",      test: (s) => maxSetsPerDay(s) >= 5 },
   { id: "both",     emoji: "🌸", name: "りょうほう",     desc: "1日に 国語と英語 りょうほう", test: (s) => bothSubjectsInADay(s) },
+  { id: "goalday",  emoji: "🎯", name: "もくひょうたっせい", desc: "1日の もくひょうを クリア",  test: (s) => !!s.lastGoalBonus },
 ];
 
 function defaults() {
@@ -47,14 +48,20 @@ function defaults() {
     freeze: { count: 1, week: isoWeek(new Date()) },
     streak: { current: 0, best: 0, last: null },
     log: [],
-    settings: { memMin: 3, testMin: 2, sound: true, lastSubject: "国語" },
+    lastGoalBonus: null,
+    settings: { memMin: 3, testMin: 2, sound: true, lastSubject: "国語", goalSets: 4, testDate: "" },
   };
 }
 let S = load();
 function load() {
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) return Object.assign(defaults(), JSON.parse(raw));
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      const merged = Object.assign(defaults(), parsed);
+      merged.settings = Object.assign(defaults().settings, parsed.settings || {});
+      return merged;
+    }
   } catch (e) {}
   return defaults();
 }
@@ -85,6 +92,17 @@ function prettyDate(iso) {
 
 /* ---------- 集計 ---------- */
 function todayLog() { return S.log.filter((e) => e.date === today()); }
+const SUBJECTS = ["国語", "英語"];
+function perSubjectToday() {
+  const per = { 国語: 0, 英語: 0 };
+  todayLog().forEach((e) => { if (per[e.subject] !== undefined) per[e.subject] += 1; });
+  return per;
+}
+function daysToTest() {
+  if (!S.settings.testDate) return null;
+  const d = daysBetween(today(), S.settings.testDate);
+  return d >= 0 ? d : null;
+}
 function maxSetsPerDay(s) {
   const m = {};
   s.log.forEach((e) => { m[e.date] = (m[e.date] || 0) + 1; });
@@ -130,10 +148,17 @@ function completeSet(correct, subject) {
     correct: correct,
   });
   S.xp += SET_XP;
+  let goalBonus = false;
+  const per = perSubjectToday();
+  if (SUBJECTS.every((sub) => per[sub] >= S.settings.goalSets) && S.lastGoalBonus !== t) {
+    S.lastGoalBonus = t;
+    S.xp += 20;
+    goalBonus = true;
+  }
   const newBadges = BADGES.filter((b) => !S.badges.includes(b.id) && b.test(S));
   newBadges.forEach((b) => S.badges.push(b.id));
   save();
-  return { correct, freezeUsed, newBadges };
+  return { correct, freezeUsed, newBadges, goalBonus };
 }
 
 /* ---------- 画面切り替え ---------- */
@@ -248,7 +273,7 @@ function quitSession() {
 let lastResult = null;
 function handleMark(correct) {
   const res = completeSet(correct, session.subject);
-  lastResult = { correct, subject: session.subject, setNo: session.setNo, freezeUsed: res.freezeUsed, newBadges: res.newBadges };
+  lastResult = { correct, subject: session.subject, setNo: session.setNo, freezeUsed: res.freezeUsed, newBadges: res.newBadges, goalBonus: res.goalBonus };
   session = null;
   releaseWake();
   document.body.classList.remove("phase-test");
@@ -268,7 +293,10 @@ function renderResult() {
   } else {
     badgeBox.hidden = true;
   }
-  $("result-note").textContent = r.freezeUsed ? "🎫 おやすみけんを つかって れんぞくを まもったよ!" : "";
+  $("result-note").textContent = [
+    r.goalBonus ? "🎯 きょうの もくひょう たっせい! +20 XP ボーナス!" : null,
+    r.freezeUsed ? "🎫 おやすみけんを つかって れんぞくを まもったよ!" : null,
+  ].filter(Boolean).join(" ");
 }
 
 /* ---------- 共有 ---------- */
@@ -283,8 +311,12 @@ function buildReport(includeLast) {
   text += "きょうのがくしゅう: " + logs.length + "セット(" + mins + "分)\n";
   text += "きょうか: " + subjects + "\n";
   text += "せいかい: " + correctSum + "/" + logs.length * 5 + "もん\n";
+  const per = perSubjectToday();
+  text += "🎯 もくひょう: 国語 " + per["国語"] + "/" + S.settings.goalSets + "・英語 " + per["英語"] + "/" + S.settings.goalSets + "\n";
   if (includeLast && lastResult) text += "いまのセット: " + lastResult.correct + "/5もん せいかい\n";
   if (S.streak.current > 1) text += "🔥 " + S.streak.current + "日れんぞく がくしゅうちゅう!\n";
+  const dt = daysToTest();
+  if (dt !== null) text += "📝 テストまで あと" + dt + "日\n";
   return text;
 }
 async function shareReport(includeLast) {
@@ -323,15 +355,31 @@ function renderHome() {
   $("home-streak-flame").textContent = es.n > 0 ? "🔥" : "🕯️";
   $("home-streak-note").textContent = es.note || (es.n === 0 ? "きょうから スタートしよう!" : "");
   $("home-freeze-count").textContent = S.freeze.week === isoWeek(new Date()) ? S.freeze.count : 1;
-  const n = todayLog().length;
-  $("home-today").textContent = n === 0 ? "まだ 0セット" : n + "セット できた!";
-  const dots = $("home-dots");
-  dots.innerHTML = "";
-  for (let i = 0; i < Math.max(5, n); i++) {
-    const d = document.createElement("span");
-    d.className = "dot" + (i < n ? " done" : "");
-    dots.appendChild(d);
+  const dt = daysToTest();
+  $("home-countdown").hidden = dt === null;
+  if (dt !== null) {
+    $("home-countdown-days").textContent = dt;
+    $("home-countdown").textContent = dt === 0 ? "📝 きょうが テスト! がんばれ!!" : "📝 テストまで あと" + dt + "日!";
   }
+  const goal = S.settings.goalSets;
+  $("home-goal-label").textContent = "きょうの もくひょう(きょうかごとに " + goal + "セット)";
+  const per = perSubjectToday();
+  const rows = $("home-goal-rows");
+  rows.innerHTML = "";
+  SUBJECTS.forEach((sub) => {
+    const row = document.createElement("div");
+    const cleared = per[sub] >= goal;
+    row.className = "goal-row" + (cleared ? " done" : "");
+    let dotsHtml = "";
+    for (let i = 0; i < Math.max(goal, per[sub]); i++) {
+      dotsHtml += '<span class="dot' + (i < per[sub] ? " done" : "") + '"></span>';
+    }
+    row.innerHTML = '<span class="goal-name">' + sub + '</span><span class="dots">' + dotsHtml + "</span><span class=\"goal-check\">" + (cleared ? "クリア!🎉" : per[sub] + "/" + goal) + "</span>";
+    rows.appendChild(row);
+  });
+  const n = todayLog().length;
+  const allClear = SUBJECTS.every((sub) => per[sub] >= goal);
+  $("home-today").textContent = allClear ? "🎯 きょうの もくひょう ぜんぶクリア!" : n === 0 ? "まだ 0セット" : "ぜんぶで " + n + "セット できた!";
   document.querySelectorAll(".subject-btn").forEach((b) => b.classList.toggle("selected", b.dataset.subject === subject));
 }
 function renderHistory() {
@@ -442,6 +490,8 @@ function bind() {
     if (settingsAvatar) S.profile.avatar = settingsAvatar;
     S.settings.memMin = parseInt($("set-mem").value, 10);
     S.settings.testMin = parseInt($("set-test").value, 10);
+    S.settings.goalSets = parseInt($("set-goal").value, 10);
+    S.settings.testDate = $("set-testdate").value || "";
     S.settings.sound = $("set-sound").checked;
     save();
     renderHome();
@@ -462,6 +512,8 @@ function openSettings() {
   renderAvatarPicker("set-avatars", settingsAvatar, (a) => { settingsAvatar = a; });
   $("set-mem").value = String(S.settings.memMin);
   $("set-test").value = String(S.settings.testMin);
+  $("set-goal").value = String(S.settings.goalSets);
+  $("set-testdate").value = S.settings.testDate || "";
   $("set-sound").checked = S.settings.sound;
   showScreen("settings");
 }

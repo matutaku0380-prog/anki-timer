@@ -1,4 +1,4 @@
-const CACHE = "anki-timer-v1";
+const CACHE = "anki-timer-v2";
 const ASSETS = [
   "./",
   "./index.html",
