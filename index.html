@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>あんきタイマー</title>
+<meta name="theme-color" content="#FF7A59">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="あんきタイマー">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- はじめて画面 -->
+<section id="screen-setup" class="screen">
+  <div class="setup-hero">
+    <div class="app-logo">⏰</div>
+    <h1>あんきタイマー</h1>
+    <p class="sub">3ぷん おぼえて 2ふんで テスト!</p>
+  </div>
+  <div class="card">
+    <label class="field-label">なまえを おしえてね</label>
+    <input type="text" id="setup-name" maxlength="10" placeholder="なまえ">
+    <label class="field-label">すきな どうぶつを えらんでね</label>
+    <div class="avatar-row" id="setup-avatars"></div>
+    <button class="btn-primary" id="setup-done">はじめる!</button>
+  </div>
+</section>
+
+<!-- ホーム画面 -->
+<section id="screen-home" class="screen">
+  <header class="home-head">
+    <button class="who" id="btn-settings" aria-label="せってい">
+      <span class="avatar" id="home-avatar">🐰</span>
+      <span id="home-name">なまえ</span>
+    </button>
+    <div class="head-stats">
+      <span class="pill pill-xp" id="home-xp">0 XP</span>
+    </div>
+  </header>
+
+  <div class="card streak-card">
+    <div class="streak-flame" id="home-streak-flame">🔥</div>
+    <div>
+      <div class="streak-num"><span id="home-streak">0</span>日 れんぞく</div>
+      <div class="streak-note" id="home-streak-note"></div>
+    </div>
+    <div class="freeze" id="home-freeze" title="おやすみけん">🎫<span id="home-freeze-count">1</span></div>
+  </div>
+
+  <div class="card">
+    <div class="today-label">きょうの がくしゅう</div>
+    <div class="today-sets" id="home-today">まだ 0セット</div>
+    <div class="dots" id="home-dots"></div>
+
+    <div class="subject-row">
+      <button class="subject-btn" data-subject="国語">国語<small>かんじ</small></button>
+      <button class="subject-btn" data-subject="英語">英語<small>たんご</small></button>
+    </div>
+
+    <button class="btn-primary btn-start" id="btn-start">▶ スタート</button>
+    <p class="start-hint">プリントを よういしてね</p>
+  </div>
+
+  <nav class="home-nav">
+    <button id="btn-history">📋 きろく</button>
+    <button id="btn-badges">🏅 バッジ</button>
+    <button id="btn-share-today">📮 れんらく</button>
+  </nav>
+</section>
+
+<!-- タイマー画面 -->
+<section id="screen-timer" class="screen">
+  <div class="phase-banner" id="timer-phase">おぼえよう!</div>
+  <div class="timer-clock" id="timer-clock">3:00</div>
+  <div class="bar"><div class="bar-fill" id="timer-bar"></div></div>
+  <div class="timer-info" id="timer-info">きょう 1セットめ・国語</div>
+  <div class="advice" id="timer-advice">💡 こえに だして よんでみよう</div>
+  <button class="btn-quiet" id="btn-quit">× やめる</button>
+</section>
+
+<!-- まるつけ入力画面 -->
+<section id="screen-marking" class="screen">
+  <h2 class="center">おつかれさま!</h2>
+  <p class="center sub">まるつけは できたかな?<br>5もん中 なんもん せいかいだった?</p>
+  <div class="mark-grid" id="mark-grid"></div>
+  <p class="advice center">💡 できなかった もんだいには<br>プリントに 印をつけておこう</p>
+</section>
+
+<!-- けっか画面 -->
+<section id="screen-result" class="screen">
+  <div class="result-hero">
+    <div class="result-emoji" id="result-emoji">🎉</div>
+    <h2 id="result-praise">よくがんばったね!</h2>
+  </div>
+  <div class="card result-stats">
+    <div class="rstat"><span class="rstat-label">せいかい</span><span class="rstat-val" id="result-correct">4/5</span></div>
+    <div class="rstat"><span class="rstat-label">ゲット</span><span class="rstat-val xp">+10 XP</span></div>
+    <div class="rstat"><span class="rstat-label">れんぞく</span><span class="rstat-val" id="result-streak">🔥1日</span></div>
+  </div>
+  <div class="badge-unlock" id="result-badge" hidden></div>
+  <div class="result-note" id="result-note"></div>
+  <button class="btn-primary" id="btn-share">📮 おうちの人に れんらくする</button>
+  <button class="btn-secondary" id="btn-again">もう1セット やる!</button>
+  <button class="btn-quiet" id="btn-home">ホームへ</button>
+</section>
+
+<!-- きろく画面 -->
+<section id="screen-history" class="screen">
+  <header class="page-head"><button class="back" data-back>‹ もどる</button><h2>きろく</h2></header>
+  <div class="summary-row">
+    <div class="sum-card"><div class="sum-num" id="hist-total">0</div><div class="sum-label">合計セット</div></div>
+    <div class="sum-card"><div class="sum-num" id="hist-min">0</div><div class="sum-label">合計(分)</div></div>
+    <div class="sum-card"><div class="sum-num" id="hist-best">0</div><div class="sum-label">さいこう れんぞく</div></div>
+  </div>
+  <div id="hist-list"></div>
+</section>
+
+<!-- バッジ画面 -->
+<section id="screen-badges" class="screen">
+  <header class="page-head"><button class="back" data-back>‹ もどる</button><h2>バッジ</h2></header>
+  <div class="badge-grid" id="badge-grid"></div>
+</section>
+
+<!-- せってい画面 -->
+<section id="screen-settings" class="screen">
+  <header class="page-head"><button class="back" data-back>‹ もどる</button><h2>せってい</h2></header>
+  <div class="card">
+    <label class="field-label">なまえ</label>
+    <input type="text" id="set-name" maxlength="10">
+    <label class="field-label">どうぶつ</label>
+    <div class="avatar-row" id="set-avatars"></div>
+    <label class="field-label">おぼえる じかん</label>
+    <select id="set-mem"><option value="1">1分</option><option value="2">2分</option><option value="3" selected>3分</option><option value="4">4分</option><option value="5">5分</option></select>
+    <label class="field-label">テストの じかん</label>
+    <select id="set-test"><option value="1">1分</option><option value="2" selected>2分</option><option value="3">3分</option></select>
+    <label class="check-row"><input type="checkbox" id="set-sound" checked> アラームの音を ならす</label>
+    <button class="btn-primary" id="set-save">ほぞんする</button>
+  </div>
+  <button class="btn-danger" id="set-reset">データを ぜんぶ けす</button>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>
