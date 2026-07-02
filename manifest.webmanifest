@@ -1,7 +1,7 @@
 {
   "name": "暗記タイマー",
   "short_name": "暗記タイマー",
-  "description": "3分暗記+2分テストの学習タイマー",
+  "description": "3分で5個覚えて2分でテスト! 暗記学習タイマー",
   "lang": "ja",
   "start_url": "./",
   "scope": "./",

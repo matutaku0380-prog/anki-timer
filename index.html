@@ -21,7 +21,7 @@
   <div class="setup-hero">
     <div class="app-logo">⏱</div>
     <h1>暗記タイマー</h1>
-    <p class="sub">3分暗記 → 2分テスト&丸つけ</p>
+    <p class="sub">3分で5個覚えて2分でテスト!</p>
   </div>
   <div class="card">
     <label class="field-label">名前</label>
@@ -65,7 +65,7 @@
     </div>
 
     <button class="btn-primary btn-start" id="btn-start">▶ スタート</button>
-    <p class="start-hint">プリントを手元に準備</p>
+    <p class="start-hint">🔊 音が鳴ります。音量を上げてからスタート(マナーモード中はバイブのみ)</p>
   </div>
 
   <nav class="home-nav">
@@ -81,6 +81,7 @@
   <div class="timer-clock" id="timer-clock">3:00</div>
   <div class="bar"><div class="bar-fill" id="timer-bar"></div></div>
   <div class="timer-info" id="timer-info">今日 1セット目・国語</div>
+  <div class="timer-pace" id="timer-pace"></div>
   <div class="advice" id="timer-advice">💡 声に出して読むと覚えやすい</div>
   <button class="btn-quiet" id="btn-quit">× 中断</button>
 </section>
@@ -91,6 +92,14 @@
   <p class="center sub">丸つけは終わった?<br>5問中、何問正解だった?</p>
   <div class="mark-grid" id="mark-grid"></div>
   <p class="advice center">💡 できなかった問題には<br>プリントに印をつけておこう</p>
+</section>
+
+<!-- 間違い直し画面 -->
+<section id="screen-practice" class="screen">
+  <h2 class="center">間違い直し</h2>
+  <p class="center sub" id="practice-msg">間違えた問題を、その場で3回ずつ書いて練習しよう</p>
+  <div class="advice center">💡 間違えた直後に書き直すのが、一番記憶に残るタイミング</div>
+  <button class="btn-primary" id="btn-practice-done">練習完了!</button>
 </section>
 
 <!-- 結果画面 -->
@@ -105,6 +114,7 @@
     <div class="rstat"><span class="rstat-label">連続</span><span class="rstat-val" id="result-streak">🔥1日</span></div>
   </div>
   <div class="badge-unlock" id="result-badge" hidden></div>
+  <div class="retry-advice" id="result-retry" hidden></div>
   <div class="result-note" id="result-note"></div>
   <button class="btn-primary" id="btn-share">📮 報告を送る</button>
   <button class="btn-secondary" id="btn-again">もう1セット</button>

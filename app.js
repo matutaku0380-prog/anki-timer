@@ -178,26 +178,30 @@ function audioInit() {
   }
   if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
 }
-function beep(freq, start, dur, vol) {
+function vib(pattern) { if (navigator.vibrate) navigator.vibrate(pattern); }
+function beep(freq, start, dur, vol, type) {
+  if (!S.settings.sound || !audioCtx) return;
+  if (audioCtx.state === "suspended") audioCtx.resume();
   const o = audioCtx.createOscillator();
   const g = audioCtx.createGain();
-  o.type = "sine";
+  o.type = type || "square";
   o.frequency.value = freq;
-  g.gain.setValueAtTime(0, audioCtx.currentTime + start);
-  g.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + start + 0.02);
-  g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + start + dur);
+  const t0 = audioCtx.currentTime + start;
+  g.gain.setValueAtTime(0, t0);
+  g.gain.linearRampToValueAtTime(vol, t0 + 0.02);
+  g.gain.setValueAtTime(vol, t0 + dur * 0.7);
+  g.gain.linearRampToValueAtTime(0, t0 + dur);
   o.connect(g).connect(audioCtx.destination);
-  o.start(audioCtx.currentTime + start);
-  o.stop(audioCtx.currentTime + start + dur + 0.05);
+  o.start(t0);
+  o.stop(t0 + dur + 0.05);
 }
-function alarm(kind) {
-  if (navigator.vibrate) navigator.vibrate(kind === "mid" ? [300, 100, 300, 100, 300] : [200, 80, 200, 80, 500]);
-  if (!S.settings.sound || !audioCtx) return;
-  if (kind === "mid") {
-    for (let r = 0; r < 3; r++) for (let i = 0; i < 3; i++) beep(880, r * 0.6 + i * 0.15, 0.1, 0.4);
-  } else {
-    [523, 659, 784, 1047].forEach((f, i) => beep(f, i * 0.18, 0.25, 0.35));
-  }
+function playStart() { beep(523, 0, 0.12, 0.4); beep(784, 0.15, 0.2, 0.4); vib(150); }
+function playPace() { beep(880, 0, 0.18, 0.6); vib(200); }
+function playPip() { beep(440, 0, 0.1, 0.6, "sine"); vib(100); }
+function playPon(final) {
+  beep(880, 0, 1.0, 0.7, "sine");
+  if (final) beep(1174, 1.1, 1.2, 0.7, "sine");
+  vib([500, 150, 500]);
 }
 
 /* ---------- 画面スリープ防止 ---------- */
@@ -218,11 +222,13 @@ let subject = S.settings.lastSubject || "国語";
 function startSession() {
   audioInit();
   const setNo = todayLog().length + 1;
-  session = { subject, setNo, phase: "mem", endsAt: Date.now() + S.settings.memMin * 60000 };
+  session = { subject, setNo, phase: "mem", endsAt: Date.now() + S.settings.memMin * 60000, lastSec: null, paceIdx: 0 };
   document.body.classList.remove("phase-test");
   renderPhase();
   showScreen("timer");
   requestWake();
+  playStart();
+  if (S.settings.sound) toast("🔊 スタート音が聞こえなければ音量を上げて!");
   clearInterval(timerId);
   timerId = setInterval(tick, 200);
   tick();
@@ -233,24 +239,38 @@ function renderPhase() {
   $("timer-info").textContent = "今日 " + session.setNo + "セット目・" + session.subject;
   const list = mem ? ADVICE_MEM : ADVICE_TEST;
   $("timer-advice").textContent = list[(S.log.length + session.setNo) % list.length];
+  $("timer-pace").textContent = mem ? "1個目から順番に暗記!" : "終わったらそのまま丸つけ";
   document.body.classList.toggle("phase-test", !mem);
 }
 function tick() {
   const rem = session.endsAt - Date.now();
+  const total = (session.phase === "mem" ? S.settings.memMin : S.settings.testMin) * 60000;
   if (rem <= 0) {
     if (session.phase === "mem") {
-      alarm("mid");
+      playPon(false);
       session.phase = "test";
       session.endsAt = Date.now() + S.settings.testMin * 60000;
+      session.lastSec = null;
       renderPhase();
     } else {
-      alarm("end");
+      playPon(true);
       finishTimer();
     }
     return;
   }
-  const total = (session.phase === "mem" ? S.settings.memMin : S.settings.testMin) * 60000;
   const sec = Math.ceil(rem / 1000);
+  if (sec !== session.lastSec) {
+    session.lastSec = sec;
+    if (sec <= 3) playPip();
+    if (session.phase === "mem") {
+      const idx = Math.floor((total - rem) / (total / 5));
+      if (idx >= 1 && idx <= 4 && idx !== session.paceIdx) {
+        session.paceIdx = idx;
+        playPace();
+        $("timer-pace").textContent = "▶ " + (idx + 1) + "個目へ!";
+      }
+    }
+  }
   $("timer-clock").textContent = Math.floor(sec / 60) + ":" + String(sec % 60).padStart(2, "0");
   $("timer-bar").style.width = (rem / total) * 100 + "%";
 }
@@ -278,7 +298,16 @@ function handleMark(correct) {
   releaseWake();
   document.body.classList.remove("phase-test");
   renderResult();
-  showScreen("result");
+  if (correct < 5) {
+    renderPractice();
+    showScreen("practice");
+  } else {
+    showScreen("result");
+  }
+}
+function renderPractice() {
+  const wrong = 5 - lastResult.correct;
+  $("practice-msg").textContent = "間違えた " + wrong + "問 を、その場で3回ずつ書いて練習しよう";
 }
 function renderResult() {
   const r = lastResult;
@@ -292,6 +321,16 @@ function renderResult() {
     badgeBox.textContent = "🏅 バッジゲット! " + r.newBadges.map((b) => b.emoji + " " + b.name).join(" / ");
   } else {
     badgeBox.hidden = true;
+  }
+  const wrong = 5 - r.correct;
+  const retry = $("result-retry");
+  if (r.correct <= 2) {
+    retry.hidden = false;
+    retry.textContent = wrong === 5
+      ? "🔁 次のセットは同じ5問でもう一度挑戦しよう!"
+      : "🔁 次のセットは「間違えた" + wrong + "問+新しい" + (5 - wrong) + "問」で再テストしよう!";
+  } else {
+    retry.hidden = true;
   }
   $("result-note").textContent = [
     r.goalBonus ? "🎯 今日の目標達成! +20 XPボーナス!" : null,
@@ -475,6 +514,7 @@ function bind() {
     grid.appendChild(b);
   }
 
+  $("btn-practice-done").onclick = () => showScreen("result");
   $("btn-share").onclick = () => shareReport(true);
   $("btn-again").onclick = startSession;
   $("btn-home").onclick = () => { renderHome(); showScreen("home"); };

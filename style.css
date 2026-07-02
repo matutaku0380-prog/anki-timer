@@ -124,6 +124,8 @@ body.phase-test .timer-clock { color: #C77A00; }
 .bar-fill { height: 100%; width: 100%; background: #22A182; border-radius: 5px; transition: width 0.2s linear; }
 body.phase-test .bar-fill { background: #EFA727; }
 .timer-info { margin-top: 14px; font-size: 14px; color: #7A756E; }
+.timer-pace { margin-top: 8px; font-size: 16px; font-weight: 600; color: #178066; min-height: 26px; }
+body.phase-test .timer-pace { color: #C77A00; }
 .advice {
   margin: 20px auto 0; max-width: 340px; padding: 13px 16px;
   background: #FBF8F0; border: 1px solid #E5DCC5; border-radius: 12px;
@@ -155,7 +157,15 @@ body.phase-test .bar-fill { background: #EFA727; }
   background: #F8F0D5; color: #7A5C0E; border-radius: 12px; font-size: 16px;
   animation: pop 0.5s ease;
 }
+.retry-advice {
+  margin: 12px 0; padding: 13px; text-align: center; font-weight: 600;
+  background: #E8F0F8; color: #2A6294; border-radius: 12px; font-size: 15px;
+}
 .result-note { text-align: center; font-size: 13px; color: #2A6294; min-height: 22px; }
+
+/* practice */
+#screen-practice { padding-top: 70px; }
+#screen-practice .advice { margin-top: 20px; }
 
 /* history */
 .page-head { display: flex; align-items: center; gap: 6px; }
