@@ -195,14 +195,20 @@ function beep(freq, start, dur, vol, type) {
   o.start(t0);
   o.stop(t0 + dur + 0.05);
 }
-function playStart() { beep(523, 0, 0.12, 0.4); beep(784, 0.15, 0.2, 0.4); vib(150); }
-function playPace() { beep(880, 0, 0.18, 0.6); vib(200); }
-function playPip() { beep(440, 0, 0.1, 0.6, "sine"); vib(100); }
-function playPon(final) {
-  beep(880, 0, 1.0, 0.7, "sine");
-  if (final) beep(1174, 1.1, 1.2, 0.7, "sine");
-  vib([500, 150, 500]);
+function signalLow(start) { beep(698, start || 0, 0.2, 0.45, "triangle"); }
+function signalHigh(start) { beep(1047, start || 0, 0.8, 0.5, "triangle"); }
+function playStartSignal() {
+  [0, 0.7, 1.4].forEach((t) => signalLow(t));
+  signalHigh(2.1);
+  vib([150, 550, 150, 550, 150, 550, 500]);
 }
+function playCoin() {
+  beep(988, 0, 0.08, 0.35, "square");
+  beep(1319, 0.08, 0.45, 0.3, "square");
+  vib(150);
+}
+function playPip() { signalLow(0); vib(100); }
+function playPon() { signalHigh(0); vib([500, 150, 500]); }
 
 /* ---------- 画面スリープ防止 ---------- */
 let wakeLock = null;
@@ -222,21 +228,34 @@ let subject = S.settings.lastSubject || "国語";
 function startSession() {
   audioInit();
   const setNo = todayLog().length + 1;
-  session = { subject, setNo, phase: "mem", endsAt: Date.now() + S.settings.memMin * 60000, lastSec: null, paceIdx: 0 };
+  session = { subject, setNo, phase: "ready", endsAt: Date.now() + 2100, lastSec: null, paceIdx: 0 };
   document.body.classList.remove("phase-test");
   renderPhase();
   showScreen("timer");
   requestWake();
-  playStart();
-  if (S.settings.sound) toast("🔊 スタート音が聞こえない時は、マナーモード解除と音量アップ!");
+  playStartSignal();
+  if (S.settings.sound) toast("🔊 音が聞こえない時は、マナーモード解除と音量アップ!");
   clearInterval(timerId);
   timerId = setInterval(tick, 200);
-  tick();
+}
+function sessionInfoText() {
+  const done = perSubjectToday()[session.subject] || 0;
+  return session.subject + " " + (done + 1) + "回目 / ノルマ" + S.settings.goalSets + "回";
 }
 function renderPhase() {
+  if (session.phase === "ready") {
+    $("timer-phase").textContent = "🏁 よーい…";
+    $("timer-clock").textContent = S.settings.memMin + ":00";
+    $("timer-bar").style.width = "100%";
+    $("timer-info").textContent = sessionInfoText();
+    $("timer-pace").textContent = "「ファーン♪」でスタート!";
+    $("timer-advice").textContent = ADVICE_MEM[(S.log.length + session.setNo) % ADVICE_MEM.length];
+    document.body.classList.remove("phase-test");
+    return;
+  }
   const mem = session.phase === "mem";
   $("timer-phase").textContent = mem ? "📖 暗記タイム" : "✏️ テスト&丸つけ";
-  $("timer-info").textContent = "今日 " + session.setNo + "セット目・" + session.subject;
+  $("timer-info").textContent = sessionInfoText();
   const list = mem ? ADVICE_MEM : ADVICE_TEST;
   $("timer-advice").textContent = list[(S.log.length + session.setNo) % list.length];
   $("timer-pace").textContent = mem ? "1個目から順番に暗記!" : "終わったらそのまま丸つけ";
@@ -244,16 +263,24 @@ function renderPhase() {
 }
 function tick() {
   const rem = session.endsAt - Date.now();
+  if (session.phase === "ready") {
+    if (rem <= 0) {
+      session.phase = "mem";
+      session.endsAt = Date.now() + S.settings.memMin * 60000;
+      session.lastSec = null;
+      renderPhase();
+    }
+    return;
+  }
   const total = (session.phase === "mem" ? S.settings.memMin : S.settings.testMin) * 60000;
   if (rem <= 0) {
+    playPon();
     if (session.phase === "mem") {
-      playPon(false);
       session.phase = "test";
       session.endsAt = Date.now() + S.settings.testMin * 60000;
       session.lastSec = null;
       renderPhase();
     } else {
-      playPon(true);
       finishTimer();
     }
     return;
@@ -266,7 +293,7 @@ function tick() {
       const idx = Math.floor((total - rem) / (total / 5));
       if (idx >= 1 && idx <= 4 && idx !== session.paceIdx) {
         session.paceIdx = idx;
-        playPace();
+        playCoin();
         $("timer-pace").textContent = "▶ " + (idx + 1) + "個目へ!";
       }
     }
@@ -291,9 +318,25 @@ function quitSession() {
 
 /* ---------- まるつけ → けっか ---------- */
 let lastResult = null;
+function buildCheers(subject, correct, before, after, goalBonus) {
+  const cheers = [];
+  const g = S.settings.goalSets;
+  if (todayLog().length === 1) cheers.push("🌅 今日最初の学習! いいスタート!");
+  if (correct === 5) cheers.push("💯 全問正解!");
+  if (after[subject] >= g && before[subject] < g) cheers.push("✅ " + subject + "のノルマクリア!");
+  if (goalBonus) cheers.push("🏆 国語も英語も両方クリア! 今日のノルマ達成!");
+  else if (after[subject] === g - 1) cheers.push("🔥 " + subject + "のノルマまで あと1セット!");
+  return cheers;
+}
 function handleMark(correct) {
+  const before = perSubjectToday();
   const res = completeSet(correct, session.subject);
-  lastResult = { correct, subject: session.subject, setNo: session.setNo, freezeUsed: res.freezeUsed, newBadges: res.newBadges, goalBonus: res.goalBonus };
+  const after = perSubjectToday();
+  lastResult = {
+    correct, subject: session.subject, setNo: session.setNo,
+    freezeUsed: res.freezeUsed, newBadges: res.newBadges, goalBonus: res.goalBonus,
+    cheers: buildCheers(session.subject, correct, before, after, res.goalBonus),
+  };
   session = null;
   releaseWake();
   document.body.classList.remove("phase-test");
@@ -315,6 +358,20 @@ function renderResult() {
   $("result-praise").textContent = PRAISE[S.log.length % PRAISE.length];
   $("result-correct").textContent = r.correct + "/5";
   $("result-streak").textContent = "🔥" + S.streak.current + "日";
+  const cheersBox = $("result-cheers");
+  cheersBox.innerHTML = "";
+  (r.cheers || []).forEach((c, i) => {
+    const div = document.createElement("div");
+    div.className = "cheer";
+    div.style.animationDelay = i * 0.15 + "s";
+    div.textContent = c;
+    cheersBox.appendChild(div);
+  });
+  const per = perSubjectToday();
+  const g = S.settings.goalSets;
+  $("result-progress").textContent =
+    "今日のノルマ: 国語 " + Math.min(per["国語"], g) + "/" + g + "・英語 " + Math.min(per["英語"], g) + "/" + g +
+    "(合計" + todayLog().length + "セット)";
   const badgeBox = $("result-badge");
   if (r.newBadges.length > 0) {
     badgeBox.hidden = false;

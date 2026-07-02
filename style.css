@@ -157,6 +157,12 @@ body.phase-test .timer-pace { color: #C77A00; }
   background: #F8F0D5; color: #7A5C0E; border-radius: 12px; font-size: 16px;
   animation: pop 0.5s ease;
 }
+.cheer {
+  margin: 8px 0; padding: 11px; text-align: center; font-weight: 600;
+  background: #E4F2EA; color: #17624A; border-radius: 12px; font-size: 15px;
+  animation: pop 0.5s ease backwards;
+}
+.result-progress { text-align: center; font-size: 13px; color: #7A756E; margin: 4px 0 10px; }
 .retry-advice {
   margin: 12px 0; padding: 13px; text-align: center; font-weight: 600;
   background: #E8F0F8; color: #2A6294; border-radius: 12px; font-size: 15px;
